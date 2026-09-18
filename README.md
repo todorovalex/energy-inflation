@@ -36,11 +36,12 @@ cd energy-inflation
 
 3. Create the schema:
 
-mysql -u root -p < sql/schema.sql
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS energy_inflation;"
+mysql -u root -p energy_inflation < sql/schema.sql
 
 4. Load mock data:
 
-mysql -u root -p < sql/seed_data.sql
+mysql -u root -p energy_inflation < sql/seed_data.sql
 
 5. Run the CRUD script:
 
