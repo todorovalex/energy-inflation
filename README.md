@@ -52,6 +52,6 @@ Requires: `mysql-connector-python` (`pip install mysql-connector-python`)
 or via a GUI tool (MySQL Workbench, DBeaver, etc.).
 
 ## Notes
-
 - Schema validated with MySQL syntax via DB Fiddle before merging.
 - All foreign keys use default constraint behavior (RESTRICT) unless stated otherwise.
+- The advanced queries compare regional energy spending, identify above average bills, and track household borrowing cost changes.
