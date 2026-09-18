@@ -37,7 +37,7 @@ CREATE TABLE CENTRAL_BANK_POLICY (
     mortgage_stress_index DECIMAL(8,4)
 );
 
---tabkes with simple FK
+-- tables with simple FK
 
 CREATE TABLE HOUSEHOLD (
     household_id INT AUTO_INCREMENT PRIMARY KEY,
