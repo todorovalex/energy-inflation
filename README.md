@@ -32,7 +32,7 @@ many-to-many relationships.
 git clone https://github.com/todorovalex/energy-inflation.git
 cd energy-inflation
 
-2. Make sure you have MySQL (or compatible) installed and running.
+2. Make sure you have MySQL 8.0+ (or compatible) installed and running.
 
 3. Create the schema:
 
@@ -43,7 +43,14 @@ mysql -u root -p energy_inflation < sql/schema.sql
 
 mysql -u root -p energy_inflation < sql/seed_data.sql
 
-5. Run the CRUD script:
+5. Install the Python dependency:
+
+python -m pip install mysql-connector-python
+
+Set DB_CONFIG in scripts/crud.py to your local MySQL username and password.
+Keep the database name as energy_inflation. Do not commit your password.
+
+Run the CRUD script:
 
 python scripts/crud.py
 
