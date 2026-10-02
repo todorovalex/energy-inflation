@@ -1,10 +1,10 @@
--- no dependency tables
 
 CREATE TABLE REGION (
     region_id INT AUTO_INCREMENT PRIMARY KEY,
     region_name VARCHAR(100) NOT NULL,
     country VARCHAR(50) NOT NULL,
-    total_population INT
+    total_population INT,
+    UNIQUE (region_name)
 );
 
 CREATE TABLE DEMOGRAPHIC_PROFILE (
@@ -19,6 +19,11 @@ CREATE TABLE ENERGY_SUPPLIER (
     supplier_name VARCHAR(100) NOT NULL,
     ofgem_license_code VARCHAR(30) UNIQUE NOT NULL,
     support_scheme_enrolled BOOLEAN NOT NULL
+);
+
+CREATE TABLE PAYMENT_METHOD (
+    payment_method_id INT AUTO_INCREMENT PRIMARY KEY,
+    payment_method_name VARCHAR(30) UNIQUE NOT NULL
 );
 
 CREATE TABLE COMMODITY_SHOCK (
@@ -37,7 +42,6 @@ CREATE TABLE CENTRAL_BANK_POLICY (
     mortgage_stress_index DECIMAL(8,4)
 );
 
--- tables with simple FK
 
 CREATE TABLE HOUSEHOLD (
     household_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -56,25 +60,27 @@ CREATE TABLE MACROECONOMIC_METRIC (
     headline_cpi DECIMAL(8,3) NOT NULL,
     inflation_rate DECIMAL(8,3) NOT NULL,
     energy_cpi_weight DECIMAL(8,4),
+    UNIQUE (region_id, recording_date),
     FOREIGN KEY (region_id) REFERENCES REGION(region_id)
 );
 
--- doble FK (energy_bill)
 
 CREATE TABLE ENERGY_BILL (
     bill_id INT AUTO_INCREMENT PRIMARY KEY,
     household_id INT NOT NULL,
     supplier_id INT NOT NULL,
+    payment_method_id INT,  
     billing_period_start DATE NOT NULL,
     billing_period_end DATE NOT NULL,
     kwh_consumed DECIMAL(10,2) NOT NULL,
-    price_cap_rate DECIMAL(10,4),
+    price_cap_rate DECIMAL(10,6),  
     total_amount_gbp DECIMAL(10,2) NOT NULL,
+    UNIQUE (household_id, supplier_id, payment_method_id, billing_period_start),
     FOREIGN KEY (household_id) REFERENCES HOUSEHOLD(household_id),
-    FOREIGN KEY (supplier_id) REFERENCES ENERGY_SUPPLIER(supplier_id)
+    FOREIGN KEY (supplier_id) REFERENCES ENERGY_SUPPLIER(supplier_id),
+    FOREIGN KEY (payment_method_id) REFERENCES PAYMENT_METHOD(payment_method_id)
 );
 
--- composed PK
 
 CREATE TABLE HOUSEHOLD_DEMOGRAPHIC (
     household_id INT NOT NULL,

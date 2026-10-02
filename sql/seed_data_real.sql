@@ -1,29 +1,26 @@
--- real world data: OFGEM energy prices + ONS inflation (2000-2025)
--- both only exist at UK national level, no regional breakdown in the source,
--- so we use 1 UK region and treat each payment method as a representative household
--- (the energy prices dataset has no household/supplier id, it's a national avg)
+
+START TRANSACTION;
 
 INSERT INTO REGION (region_name, country, total_population)
-VALUES ('United Kingdom', 'United Kingdom', 67000000);
+VALUES ('United Kingdom', 'United Kingdom', NULL); 
 SET @uk_region = LAST_INSERT_ID();
 
+INSERT INTO PAYMENT_METHOD (payment_method_name) VALUES ('Credit');
+SET @pm_credit = LAST_INSERT_ID();
+INSERT INTO PAYMENT_METHOD (payment_method_name) VALUES ('Direct debit');
+SET @pm_direct_debit = LAST_INSERT_ID();
+INSERT INTO PAYMENT_METHOD (payment_method_name) VALUES ('Prepayment');
+SET @pm_prepayment = LAST_INSERT_ID();
+
+
 INSERT INTO ENERGY_SUPPLIER (supplier_name, ofgem_license_code, support_scheme_enrolled)
-VALUES ('National Average (Ofgem)', 'NATIONAL-AVG', FALSE);
+VALUES ('UK national average (DESNZ QEP 2.2.3)', 'NATIONAL-AVG', FALSE);
 SET @national_supplier = LAST_INSERT_ID();
 
-INSERT INTO HOUSEHOLD (region_id, postcode, dwelling_type)
-VALUES (@uk_region, 'UK-CREDIT', 'National average, credit customers');
-SET @hh_credit = LAST_INSERT_ID();
+INSERT INTO HOUSEHOLD (region_id, postcode, dwelling_type, occupant_count, housing_tenure)
+VALUES (@uk_region, 'UK-AVG', NULL, NULL, NULL);
+SET @hh_uk_avg = LAST_INSERT_ID();
 
-INSERT INTO HOUSEHOLD (region_id, postcode, dwelling_type)
-VALUES (@uk_region, 'UK-DD', 'National average, direct debit customers');
-SET @hh_dd = LAST_INSERT_ID();
-
-INSERT INTO HOUSEHOLD (region_id, postcode, dwelling_type)
-VALUES (@uk_region, 'UK-PPM', 'National average, prepayment customers');
-SET @hh_ppm = LAST_INSERT_ID();
-
--- ONS inflation -> MACROECONOMIC_METRIC (312 rows, energy_cpi_weight not published so NULL)
 INSERT INTO MACROECONOMIC_METRIC (region_id, recording_date, headline_cpi, inflation_rate, energy_cpi_weight)
 VALUES
 (@uk_region, '2000-01-01', 71.9, 0.8, NULL),
@@ -339,94 +336,91 @@ VALUES
 (@uk_region, '2025-11-01', 139.5, 3.2, NULL),
 (@uk_region, '2025-12-01', 140.1, 3.4, NULL);
 
--- energy prices -> ENERGY_BILL, one row per year per payment method (78 rows)
--- credit customers
-INSERT INTO ENERGY_BILL (household_id, supplier_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp)
+INSERT INTO ENERGY_BILL (household_id, supplier_id, payment_method_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp)
 VALUES
-(@hh_credit, @national_supplier, '2000-01-01', '2000-12-31', 3300, 7.770000, 257.00),
-(@hh_credit, @national_supplier, '2001-01-01', '2001-12-31', 3300, 7.580000, 250.00),
-(@hh_credit, @national_supplier, '2002-01-01', '2002-12-31', 3300, 7.540000, 249.00),
-(@hh_credit, @national_supplier, '2003-01-01', '2003-12-31', 3300, 7.575758, 250.00),
-(@hh_credit, @national_supplier, '2004-01-01', '2004-12-31', 3300, 7.787879, 257.00),
-(@hh_credit, @national_supplier, '2005-01-01', '2005-12-31', 3300, 8.636364, 285.00),
-(@hh_credit, @national_supplier, '2006-01-01', '2006-12-31', 3300, 10.242424, 338.00),
-(@hh_credit, @national_supplier, '2007-01-01', '2007-12-31', 3300, 11.457672, 378.10),
-(@hh_credit, @national_supplier, '2008-01-01', '2008-12-31', 3300, 13.177626, 434.86),
-(@hh_credit, @national_supplier, '2009-01-01', '2009-12-31', 3300, 13.564081, 447.61),
-(@hh_credit, @national_supplier, '2010-01-01', '2010-12-31', 3300, 13.180627, 434.96),
-(@hh_credit, @national_supplier, '2011-01-01', '2011-12-31', 3300, 14.302221, 471.97),
-(@hh_credit, @national_supplier, '2012-01-01', '2012-12-31', 3300, 15.156667, 500.17),
-(@hh_credit, @national_supplier, '2013-01-01', '2013-12-31', 3800, 15.831579, 601.60),
-(@hh_credit, @national_supplier, '2014-01-01', '2014-12-31', 3800, 16.281605, 618.70),
-(@hh_credit, @national_supplier, '2015-01-01', '2015-12-31', 3800, 16.184621, 615.02),
-(@hh_credit, @national_supplier, '2016-01-01', '2016-12-31', 3800, 16.423747, 624.10),
-(@hh_credit, @national_supplier, '2017-01-01', '2017-12-31', 3800, 17.680000, 672.00),
-(@hh_credit, @national_supplier, '2018-01-01', '2018-12-31', 3800, 19.167559, 728.37),
-(@hh_credit, @national_supplier, '2019-01-01', '2019-12-31', 3800, 20.414425, 775.75),
-(@hh_credit, @national_supplier, '2020-01-01', '2020-12-31', 3600, 20.981710, 755.34),
-(@hh_credit, @national_supplier, '2021-01-01', '2021-12-31', 3600, 22.795733, 820.65),
-(@hh_credit, @national_supplier, '2022-01-01', '2022-12-31', 3400, 34.315608, 1166.73),
-(@hh_credit, @national_supplier, '2023-01-01', '2023-12-31', 3400, 37.073926, 1260.51),
-(@hh_credit, @national_supplier, '2024-01-01', '2024-12-31', 3400, 33.041463, 1123.41),
-(@hh_credit, @national_supplier, '2025-01-01', '2025-12-31', 3400, 33.083230, 1124.83);
+(@hh_uk_avg, @national_supplier, @pm_credit, '2000-01-01', '2000-12-31', 3300, 0.077700, 257.00),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2001-01-01', '2001-12-31', 3300, 0.075800, 250.00),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2002-01-01', '2002-12-31', 3300, 0.075400, 249.00),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2003-01-01', '2003-12-31', 3300, 0.075758, 250.00),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2004-01-01', '2004-12-31', 3300, 0.077879, 257.00),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2005-01-01', '2005-12-31', 3300, 0.086364, 285.00),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2006-01-01', '2006-12-31', 3300, 0.102424, 338.00),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2007-01-01', '2007-12-31', 3300, 0.114577, 378.10),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2008-01-01', '2008-12-31', 3300, 0.131776, 434.86),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2009-01-01', '2009-12-31', 3300, 0.135641, 447.61),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2010-01-01', '2010-12-31', 3300, 0.131806, 434.96),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2011-01-01', '2011-12-31', 3300, 0.143022, 471.97),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2012-01-01', '2012-12-31', 3300, 0.151567, 500.17),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2013-01-01', '2013-12-31', 3800, 0.158316, 601.60),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2014-01-01', '2014-12-31', 3800, 0.162816, 618.70),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2015-01-01', '2015-12-31', 3800, 0.161846, 615.02),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2016-01-01', '2016-12-31', 3800, 0.164237, 624.10),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2017-01-01', '2017-12-31', 3800, 0.176800, 672.00),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2018-01-01', '2018-12-31', 3800, 0.191676, 728.37),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2019-01-01', '2019-12-31', 3800, 0.204144, 775.75),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2020-01-01', '2020-12-31', 3600, 0.209817, 755.34),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2021-01-01', '2021-12-31', 3600, 0.227957, 820.65),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2022-01-01', '2022-12-31', 3400, 0.343156, 1166.73),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2023-01-01', '2023-12-31', 3400, 0.370739, 1260.51),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2024-01-01', '2024-12-31', 3400, 0.330415, 1123.41),
+(@hh_uk_avg, @national_supplier, @pm_credit, '2025-01-01', '2025-12-31', 3400, 0.330832, 1124.83);
 
--- direct debit customers
-INSERT INTO ENERGY_BILL (household_id, supplier_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp)
+INSERT INTO ENERGY_BILL (household_id, supplier_id, payment_method_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp)
 VALUES
-(@hh_dd, @national_supplier, '2000-01-01', '2000-12-31', 3300, 7.420000, 245.00),
-(@hh_dd, @national_supplier, '2001-01-01', '2001-12-31', 3300, 7.230000, 239.00),
-(@hh_dd, @national_supplier, '2002-01-01', '2002-12-31', 3300, 7.190000, 237.00),
-(@hh_dd, @national_supplier, '2003-01-01', '2003-12-31', 3300, 7.212121, 238.00),
-(@hh_dd, @national_supplier, '2004-01-01', '2004-12-31', 3300, 7.393939, 244.00),
-(@hh_dd, @national_supplier, '2005-01-01', '2005-12-31', 3300, 8.151515, 269.00),
-(@hh_dd, @national_supplier, '2006-01-01', '2006-12-31', 3300, 9.484848, 313.00),
-(@hh_dd, @national_supplier, '2007-01-01', '2007-12-31', 3300, 10.557883, 348.41),
-(@hh_dd, @national_supplier, '2008-01-01', '2008-12-31', 3300, 12.120341, 399.97),
-(@hh_dd, @national_supplier, '2009-01-01', '2009-12-31', 3300, 12.402002, 409.27),
-(@hh_dd, @national_supplier, '2010-01-01', '2010-12-31', 3300, 12.071461, 398.36),
-(@hh_dd, @national_supplier, '2011-01-01', '2011-12-31', 3300, 13.163876, 434.41),
-(@hh_dd, @national_supplier, '2012-01-01', '2012-12-31', 3300, 13.938485, 459.97),
-(@hh_dd, @national_supplier, '2013-01-01', '2013-12-31', 3800, 14.647105, 556.59),
-(@hh_dd, @national_supplier, '2014-01-01', '2014-12-31', 3800, 14.989684, 569.61),
-(@hh_dd, @national_supplier, '2015-01-01', '2015-12-31', 3800, 14.694672, 558.40),
-(@hh_dd, @national_supplier, '2016-01-01', '2016-12-31', 3800, 14.706512, 558.85),
-(@hh_dd, @national_supplier, '2017-01-01', '2017-12-31', 3800, 15.760000, 599.00),
-(@hh_dd, @national_supplier, '2018-01-01', '2018-12-31', 3800, 17.337272, 658.82),
-(@hh_dd, @national_supplier, '2019-01-01', '2019-12-31', 3800, 18.602643, 706.90),
-(@hh_dd, @national_supplier, '2020-01-01', '2020-12-31', 3600, 19.102101, 687.68),
-(@hh_dd, @national_supplier, '2021-01-01', '2021-12-31', 3600, 20.949920, 754.20),
-(@hh_dd, @national_supplier, '2022-01-01', '2022-12-31', 3400, 32.201417, 1094.85),
-(@hh_dd, @national_supplier, '2023-01-01', '2023-12-31', 3400, 35.459426, 1205.62),
-(@hh_dd, @national_supplier, '2024-01-01', '2024-12-31', 3400, 31.813518, 1081.66),
-(@hh_dd, @national_supplier, '2025-01-01', '2025-12-31', 3400, 31.158401, 1059.39);
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2000-01-01', '2000-12-31', 3300, 0.074200, 245.00),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2001-01-01', '2001-12-31', 3300, 0.072300, 239.00),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2002-01-01', '2002-12-31', 3300, 0.071900, 237.00),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2003-01-01', '2003-12-31', 3300, 0.072121, 238.00),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2004-01-01', '2004-12-31', 3300, 0.073939, 244.00),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2005-01-01', '2005-12-31', 3300, 0.081515, 269.00),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2006-01-01', '2006-12-31', 3300, 0.094848, 313.00),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2007-01-01', '2007-12-31', 3300, 0.105579, 348.41),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2008-01-01', '2008-12-31', 3300, 0.121203, 399.97),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2009-01-01', '2009-12-31', 3300, 0.124020, 409.27),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2010-01-01', '2010-12-31', 3300, 0.120715, 398.36),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2011-01-01', '2011-12-31', 3300, 0.131639, 434.41),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2012-01-01', '2012-12-31', 3300, 0.139385, 459.97),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2013-01-01', '2013-12-31', 3800, 0.146471, 556.59),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2014-01-01', '2014-12-31', 3800, 0.149897, 569.61),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2015-01-01', '2015-12-31', 3800, 0.146947, 558.40),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2016-01-01', '2016-12-31', 3800, 0.147065, 558.85),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2017-01-01', '2017-12-31', 3800, 0.157600, 599.00),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2018-01-01', '2018-12-31', 3800, 0.173373, 658.82),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2019-01-01', '2019-12-31', 3800, 0.186026, 706.90),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2020-01-01', '2020-12-31', 3600, 0.191021, 687.68),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2021-01-01', '2021-12-31', 3600, 0.209499, 754.20),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2022-01-01', '2022-12-31', 3400, 0.322014, 1094.85),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2023-01-01', '2023-12-31', 3400, 0.354594, 1205.62),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2024-01-01', '2024-12-31', 3400, 0.318135, 1081.66),
+(@hh_uk_avg, @national_supplier, @pm_direct_debit, '2025-01-01', '2025-12-31', 3400, 0.311584, 1059.39);
 
--- prepayment customers
-INSERT INTO ENERGY_BILL (household_id, supplier_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp)
+INSERT INTO ENERGY_BILL (household_id, supplier_id, payment_method_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp)
 VALUES
-(@hh_ppm, @national_supplier, '2000-01-01', '2000-12-31', 3300, 8.310000, 274.00),
-(@hh_ppm, @national_supplier, '2001-01-01', '2001-12-31', 3300, 8.090000, 267.00),
-(@hh_ppm, @national_supplier, '2002-01-01', '2002-12-31', 3300, 8.030000, 265.00),
-(@hh_ppm, @national_supplier, '2003-01-01', '2003-12-31', 3300, 8.060606, 266.00),
-(@hh_ppm, @national_supplier, '2004-01-01', '2004-12-31', 3300, 8.303030, 274.00),
-(@hh_ppm, @national_supplier, '2005-01-01', '2005-12-31', 3300, 9.212121, 304.00),
-(@hh_ppm, @national_supplier, '2006-01-01', '2006-12-31', 3300, 10.878788, 359.00),
-(@hh_ppm, @national_supplier, '2007-01-01', '2007-12-31', 3300, 11.934647, 393.84),
-(@hh_ppm, @national_supplier, '2008-01-01', '2008-12-31', 3300, 13.747238, 453.66),
-(@hh_ppm, @national_supplier, '2009-01-01', '2009-12-31', 3300, 13.855873, 457.24),
-(@hh_ppm, @national_supplier, '2010-01-01', '2010-12-31', 3300, 13.505758, 445.69),
-(@hh_ppm, @national_supplier, '2011-01-01', '2011-12-31', 3300, 14.504035, 478.63),
-(@hh_ppm, @national_supplier, '2012-01-01', '2012-12-31', 3300, 15.188182, 501.21),
-(@hh_ppm, @national_supplier, '2013-01-01', '2013-12-31', 3800, 15.928684, 605.29),
-(@hh_ppm, @national_supplier, '2014-01-01', '2014-12-31', 3800, 16.392678, 622.92),
-(@hh_ppm, @national_supplier, '2015-01-01', '2015-12-31', 3800, 16.256335, 617.74),
-(@hh_ppm, @national_supplier, '2016-01-01', '2016-12-31', 3800, 16.382365, 622.53),
-(@hh_ppm, @national_supplier, '2017-01-01', '2017-12-31', 3800, 16.200000, 616.00),
-(@hh_ppm, @national_supplier, '2018-01-01', '2018-12-31', 3800, 17.115447, 650.39),
-(@hh_ppm, @national_supplier, '2019-01-01', '2019-12-31', 3800, 17.379265, 660.41),
-(@hh_ppm, @national_supplier, '2020-01-01', '2020-12-31', 3600, 20.024555, 720.88),
-(@hh_ppm, @national_supplier, '2021-01-01', '2021-12-31', 3600, 21.649002, 779.36),
-(@hh_ppm, @national_supplier, '2022-01-01', '2022-12-31', 3400, 31.393526, 1067.38),
-(@hh_ppm, @national_supplier, '2023-01-01', '2023-12-31', 3400, 35.154052, 1195.24),
-(@hh_ppm, @national_supplier, '2024-01-01', '2024-12-31', 3400, 30.714474, 1044.29),
-(@hh_ppm, @national_supplier, '2025-01-01', '2025-12-31', 3400, 31.051325, 1055.75);
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2000-01-01', '2000-12-31', 3300, 0.083100, 274.00),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2001-01-01', '2001-12-31', 3300, 0.080900, 267.00),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2002-01-01', '2002-12-31', 3300, 0.080300, 265.00),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2003-01-01', '2003-12-31', 3300, 0.080606, 266.00),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2004-01-01', '2004-12-31', 3300, 0.083030, 274.00),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2005-01-01', '2005-12-31', 3300, 0.092121, 304.00),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2006-01-01', '2006-12-31', 3300, 0.108788, 359.00),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2007-01-01', '2007-12-31', 3300, 0.119346, 393.84),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2008-01-01', '2008-12-31', 3300, 0.137472, 453.66),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2009-01-01', '2009-12-31', 3300, 0.138559, 457.24),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2010-01-01', '2010-12-31', 3300, 0.135058, 445.69),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2011-01-01', '2011-12-31', 3300, 0.145040, 478.63),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2012-01-01', '2012-12-31', 3300, 0.151882, 501.21),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2013-01-01', '2013-12-31', 3800, 0.159287, 605.29),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2014-01-01', '2014-12-31', 3800, 0.163927, 622.92),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2015-01-01', '2015-12-31', 3800, 0.162563, 617.74),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2016-01-01', '2016-12-31', 3800, 0.163824, 622.53),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2017-01-01', '2017-12-31', 3800, 0.162000, 616.00),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2018-01-01', '2018-12-31', 3800, 0.171154, 650.39),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2019-01-01', '2019-12-31', 3800, 0.173793, 660.41),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2020-01-01', '2020-12-31', 3600, 0.200246, 720.88),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2021-01-01', '2021-12-31', 3600, 0.216490, 779.36),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2022-01-01', '2022-12-31', 3400, 0.313935, 1067.38),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2023-01-01', '2023-12-31', 3400, 0.351541, 1195.24),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2024-01-01', '2024-12-31', 3400, 0.307145, 1044.29),
+(@hh_uk_avg, @national_supplier, @pm_prepayment, '2025-01-01', '2025-12-31', 3400, 0.310513, 1055.75);
 
+COMMIT;
