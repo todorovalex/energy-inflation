@@ -78,3 +78,20 @@ UK Domestic Electricity Prices
 - Licence: Open Government Licence (OGL) v3.0. DESNZ publications are published under the OGL v3.0.
 - Access: Publicly available.
 - Selected data: Annual UK domestic electricity prices and bills from 2000–2025, differentiated by payment type.
+
+## Real data query validation (point 3 and 5)
+
+Re-ran the 3 queries from week 3 against the schema with real data integrated:
+
+- Query 1 (regional Q1 2022 spending): the real "United Kingdom" row never appears.
+  Real bills are annual (Jan-Dec), but the query requires billing_period_end <=
+  2022-03-31 (quarterly), so no real bill ever matches. Not adapted for this
+  deliverable since it's expected: the real data is a single national average,
+  not a 3+ household sample like the query assumes.
+- Query 2 (bills above same-period average): still meaningful with real data -
+  compares the 3 payment methods of the UK household within the same year and
+  surfaces which one cost above that year's average.
+- Query 3 (borrowing cost change via policy impact): unaffected by the real
+  data integration. Neither real dataset covers interest rates or mortgage
+  costs, so the UK household has 0 rows in HOUSEHOLD_POLICY_IMPACT and the
+  query still only reflects mock data.
