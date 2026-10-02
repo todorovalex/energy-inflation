@@ -1,0 +1,79 @@
+region_name,country,recording_year,commodity_type,payment_method,standard_consumption_kwh,unit_cost_pence_per_kwh,average_annual_bill_gbp,source_sheet,source_row
+United Kingdom,United Kingdom,2000,Electricity,Credit,3300,7.770000,257.00,2.2.3 (Historic),124
+United Kingdom,United Kingdom,2000,Electricity,Direct debit,3300,7.420000,245.00,2.2.3 (Historic),124
+United Kingdom,United Kingdom,2000,Electricity,Prepayment,3300,8.310000,274.00,2.2.3 (Historic),124
+United Kingdom,United Kingdom,2001,Electricity,Credit,3300,7.580000,250.00,2.2.3 (Historic),170
+United Kingdom,United Kingdom,2001,Electricity,Direct debit,3300,7.230000,239.00,2.2.3 (Historic),170
+United Kingdom,United Kingdom,2001,Electricity,Prepayment,3300,8.090000,267.00,2.2.3 (Historic),170
+United Kingdom,United Kingdom,2002,Electricity,Credit,3300,7.540000,249.00,2.2.3 (Historic),216
+United Kingdom,United Kingdom,2002,Electricity,Direct debit,3300,7.190000,237.00,2.2.3 (Historic),216
+United Kingdom,United Kingdom,2002,Electricity,Prepayment,3300,8.030000,265.00,2.2.3 (Historic),216
+United Kingdom,United Kingdom,2003,Electricity,Credit,3300,7.575758,250.00,2.2.3 (Historic),262
+United Kingdom,United Kingdom,2003,Electricity,Direct debit,3300,7.212121,238.00,2.2.3 (Historic),262
+United Kingdom,United Kingdom,2003,Electricity,Prepayment,3300,8.060606,266.00,2.2.3 (Historic),262
+United Kingdom,United Kingdom,2004,Electricity,Credit,3300,7.787879,257.00,2.2.3 (Historic),308
+United Kingdom,United Kingdom,2004,Electricity,Direct debit,3300,7.393939,244.00,2.2.3 (Historic),308
+United Kingdom,United Kingdom,2004,Electricity,Prepayment,3300,8.303030,274.00,2.2.3 (Historic),308
+United Kingdom,United Kingdom,2005,Electricity,Credit,3300,8.636364,285.00,2.2.3 (Historic),354
+United Kingdom,United Kingdom,2005,Electricity,Direct debit,3300,8.151515,269.00,2.2.3 (Historic),354
+United Kingdom,United Kingdom,2005,Electricity,Prepayment,3300,9.212121,304.00,2.2.3 (Historic),354
+United Kingdom,United Kingdom,2006,Electricity,Credit,3300,10.242424,338.00,2.2.3 (Historic),400
+United Kingdom,United Kingdom,2006,Electricity,Direct debit,3300,9.484848,313.00,2.2.3 (Historic),400
+United Kingdom,United Kingdom,2006,Electricity,Prepayment,3300,10.878788,359.00,2.2.3 (Historic),400
+United Kingdom,United Kingdom,2007,Electricity,Credit,3300,11.457672,378.10,2.2.3 (Historic),446
+United Kingdom,United Kingdom,2007,Electricity,Direct debit,3300,10.557883,348.41,2.2.3 (Historic),446
+United Kingdom,United Kingdom,2007,Electricity,Prepayment,3300,11.934647,393.84,2.2.3 (Historic),446
+United Kingdom,United Kingdom,2008,Electricity,Credit,3300,13.177626,434.86,2.2.3 (Historic),492
+United Kingdom,United Kingdom,2008,Electricity,Direct debit,3300,12.120341,399.97,2.2.3 (Historic),492
+United Kingdom,United Kingdom,2008,Electricity,Prepayment,3300,13.747238,453.66,2.2.3 (Historic),492
+United Kingdom,United Kingdom,2009,Electricity,Credit,3300,13.564081,447.61,2.2.3 (Historic),538
+United Kingdom,United Kingdom,2009,Electricity,Direct debit,3300,12.402002,409.27,2.2.3 (Historic),538
+United Kingdom,United Kingdom,2009,Electricity,Prepayment,3300,13.855873,457.24,2.2.3 (Historic),538
+United Kingdom,United Kingdom,2010,Electricity,Credit,3300,13.180627,434.96,2.2.3 (Historic),584
+United Kingdom,United Kingdom,2010,Electricity,Direct debit,3300,12.071461,398.36,2.2.3 (Historic),584
+United Kingdom,United Kingdom,2010,Electricity,Prepayment,3300,13.505758,445.69,2.2.3 (Historic),584
+United Kingdom,United Kingdom,2011,Electricity,Credit,3300,14.302221,471.97,2.2.3 (Historic),630
+United Kingdom,United Kingdom,2011,Electricity,Direct debit,3300,13.163876,434.41,2.2.3 (Historic),630
+United Kingdom,United Kingdom,2011,Electricity,Prepayment,3300,14.504035,478.63,2.2.3 (Historic),630
+United Kingdom,United Kingdom,2012,Electricity,Credit,3300,15.156667,500.17,2.2.3 (Historic),676
+United Kingdom,United Kingdom,2012,Electricity,Direct debit,3300,13.938485,459.97,2.2.3 (Historic),676
+United Kingdom,United Kingdom,2012,Electricity,Prepayment,3300,15.188182,501.21,2.2.3 (Historic),676
+United Kingdom,United Kingdom,2013,Electricity,Credit,3800,15.831579,601.60,2.2.3 (Historic),722
+United Kingdom,United Kingdom,2013,Electricity,Direct debit,3800,14.647105,556.59,2.2.3 (Historic),722
+United Kingdom,United Kingdom,2013,Electricity,Prepayment,3800,15.928684,605.29,2.2.3 (Historic),722
+United Kingdom,United Kingdom,2014,Electricity,Credit,3800,16.281605,618.70,2.2.3 (Historic),739
+United Kingdom,United Kingdom,2014,Electricity,Direct debit,3800,14.989684,569.61,2.2.3 (Historic),739
+United Kingdom,United Kingdom,2014,Electricity,Prepayment,3800,16.392678,622.92,2.2.3 (Historic),739
+United Kingdom,United Kingdom,2015,Electricity,Credit,3800,16.184621,615.02,2.2.3 (Historic),755
+United Kingdom,United Kingdom,2015,Electricity,Direct debit,3800,14.694672,558.40,2.2.3 (Historic),755
+United Kingdom,United Kingdom,2015,Electricity,Prepayment,3800,16.256335,617.74,2.2.3 (Historic),755
+United Kingdom,United Kingdom,2016,Electricity,Credit,3800,16.423747,624.10,2.2.3 (Historic),771
+United Kingdom,United Kingdom,2016,Electricity,Direct debit,3800,14.706512,558.85,2.2.3 (Historic),771
+United Kingdom,United Kingdom,2016,Electricity,Prepayment,3800,16.382365,622.53,2.2.3 (Historic),771
+United Kingdom,United Kingdom,2017,Electricity,Credit,3800,17.680000,672.00,2.2.3 (Historic),787
+United Kingdom,United Kingdom,2017,Electricity,Direct debit,3800,15.760000,599.00,2.2.3 (Historic),787
+United Kingdom,United Kingdom,2017,Electricity,Prepayment,3800,16.200000,616.00,2.2.3 (Historic),787
+United Kingdom,United Kingdom,2018,Electricity,Credit,3800,19.167559,728.37,2.2.3 (Historic),803
+United Kingdom,United Kingdom,2018,Electricity,Direct debit,3800,17.337272,658.82,2.2.3 (Historic),803
+United Kingdom,United Kingdom,2018,Electricity,Prepayment,3800,17.115447,650.39,2.2.3 (Historic),803
+United Kingdom,United Kingdom,2019,Electricity,Credit,3800,20.414425,775.75,2.2.3 (Historic),819
+United Kingdom,United Kingdom,2019,Electricity,Direct debit,3800,18.602643,706.90,2.2.3 (Historic),819
+United Kingdom,United Kingdom,2019,Electricity,Prepayment,3800,17.379265,660.41,2.2.3 (Historic),819
+United Kingdom,United Kingdom,2020,Electricity,Credit,3600,20.981710,755.34,2.2.3 (Historic),835
+United Kingdom,United Kingdom,2020,Electricity,Direct debit,3600,19.102101,687.68,2.2.3 (Historic),835
+United Kingdom,United Kingdom,2020,Electricity,Prepayment,3600,20.024555,720.88,2.2.3 (Historic),835
+United Kingdom,United Kingdom,2021,Electricity,Credit,3600,22.795733,820.65,2.2.3 (Historic),851
+United Kingdom,United Kingdom,2021,Electricity,Direct debit,3600,20.949920,754.20,2.2.3 (Historic),851
+United Kingdom,United Kingdom,2021,Electricity,Prepayment,3600,21.649002,779.36,2.2.3 (Historic),851
+United Kingdom,United Kingdom,2022,Electricity,Credit,3400,34.315608,1166.73,2.2.3,28
+United Kingdom,United Kingdom,2022,Electricity,Direct debit,3400,32.201417,1094.85,2.2.3,28
+United Kingdom,United Kingdom,2022,Electricity,Prepayment,3400,31.393526,1067.38,2.2.3,28
+United Kingdom,United Kingdom,2023,Electricity,Credit,3400,37.073926,1260.51,2.2.3,44
+United Kingdom,United Kingdom,2023,Electricity,Direct debit,3400,35.459426,1205.62,2.2.3,44
+United Kingdom,United Kingdom,2023,Electricity,Prepayment,3400,35.154052,1195.24,2.2.3,44
+United Kingdom,United Kingdom,2024,Electricity,Credit,3400,33.041463,1123.41,2.2.3,60
+United Kingdom,United Kingdom,2024,Electricity,Direct debit,3400,31.813518,1081.66,2.2.3,60
+United Kingdom,United Kingdom,2024,Electricity,Prepayment,3400,30.714474,1044.29,2.2.3,60
+United Kingdom,United Kingdom,2025,Electricity,Credit,3400,33.083230,1124.83,2.2.3,76
+United Kingdom,United Kingdom,2025,Electricity,Direct debit,3400,31.158401,1059.39,2.2.3,76
+United Kingdom,United Kingdom,2025,Electricity,Prepayment,3400,31.051325,1055.75,2.2.3,76
