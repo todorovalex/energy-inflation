@@ -63,3 +63,18 @@ or via a GUI tool (MySQL Workbench, DBeaver, etc.).
 - Schema validated with MySQL syntax via DB Fiddle before merging.
 - All foreign keys use default constraint behavior (RESTRICT) unless stated otherwise.
 - The advanced queries compare regional energy spending, identify above average bills, and track household borrowing cost changes.
+
+## Documentation of Real Datasets
+UK Consumer Price Inflation
+- Source: Office for National Statistics (ONS), Consumer price inflation time series
+- Publication date: 21 January 2026 for the December 2025 time-series release.
+- Licence: Open Government Licence (OGL) v3.0. ONS states that most of its published content is available under the Open Government Licence.
+- Access: Publicly available.
+- Selected data: Monthly UK CPI and inflation data from 2000–2025.
+
+UK Domestic Electricity Prices
+- Source: Department for Energy Security and Net Zero (DESNZ), Annual domestic energy bills, QEP Table 2.2.3 — Average annual domestic electricity bills for UK regions.
+- Publication date: The statistical dataset was originally published 28 March 2013. The version containing the 2025 data was updated on 18 December 2025; QEP Table 2.2.3 was  updated again on 30 June 2026.
+- Licence: Open Government Licence (OGL) v3.0. DESNZ publications are published under the OGL v3.0.
+- Access: Publicly available.
+- Selected data: Annual UK domestic electricity prices and bills from 2000–2025, differentiated by payment type.
