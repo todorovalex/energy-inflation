@@ -71,3 +71,40 @@ FROM changes
 WHERE previous_cost IS NOT NULL
   AND borrowing_cost_gbp IS NOT NULL
 ORDER BY cost_increase_gbp DESC, household_id, effective_date;
+
+-- GitHub user: altay-frzc
+-- Question: Do vulnerable households use less energy but pay more per kWh
+--           than non-vulnerable households?
+-- Why it matters: shows whether rising energy prices hit vulnerable households
+--           harder, the central social question of the project.
+-- Note: a household with several demographic profiles appears in each group.
+SELECT
+    d.vulnerability_flag,
+    COUNT(DISTINCT hd.household_id) AS households,
+    ROUND(AVG(b.kwh_consumed), 2) AS avg_kwh_per_bill,
+    ROUND(AVG(b.total_amount_gbp), 2) AS avg_bill_gbp,
+    ROUND(SUM(b.total_amount_gbp) / NULLIF(SUM(b.kwh_consumed), 0), 4) AS gbp_per_kwh
+FROM DEMOGRAPHIC_PROFILE d
+JOIN HOUSEHOLD_DEMOGRAPHIC hd ON hd.demographic_id = d.demographic_id
+JOIN ENERGY_BILL b ON b.household_id = hd.household_id
+GROUP BY d.vulnerability_flag
+ORDER BY d.vulnerability_flag DESC;
+
+-- GitHub user: altay-frzc
+-- Question: Which type of commodity shock has the largest average impact on
+--           regional inflation?
+-- Why it matters: links wholesale energy shocks to inflation, which is the
+--           link between energy prices and inflation that the project studies.
+-- Note: observations with an unknown impact_value are excluded.
+SELECT
+    c.commodity_type,
+    s.impact_type,
+    COUNT(*) AS observations,
+    ROUND(AVG(s.impact_value), 4) AS avg_impact_value,
+    ROUND(AVG(m.inflation_rate), 3) AS avg_inflation_rate
+FROM SHOCK_IMPACT_LOG s
+JOIN COMMODITY_SHOCK c ON c.shock_id = s.shock_id
+JOIN MACROECONOMIC_METRIC m ON m.metric_id = s.metric_id
+WHERE s.impact_value IS NOT NULL
+GROUP BY c.commodity_type, s.impact_type
+ORDER BY avg_impact_value DESC, c.commodity_type, s.impact_type;
