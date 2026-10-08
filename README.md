@@ -13,17 +13,17 @@ central-bank policy affect UK households across regions and demographic groups.
 
 ## Repo structure
 
-- `sql/schema.sql` — Table definitions (DDL): 11 tables, PK/FK constraints
+- `sql/schema.sql` — Table definitions (DDL): 12 tables, PK/FK constraints
 - `sql/seed_data.sql` — Mock data (INSERT statements)
 - `sql/queries.sql` — Advanced SQL queries (JOINs, aggregations, subqueries)
 - `scripts/crud.py` — Python script for basic CRUD operations against the DB
 
 ## Entity overview
 
-11 tables: REGION, HOUSEHOLD, DEMOGRAPHIC_PROFILE, ENERGY_BILL, ENERGY_SUPPLIER,
-MACROECONOMIC_METRIC, COMMODITY_SHOCK, CENTRAL_BANK_POLICY, and 3 bridge tables
-(HOUSEHOLD_DEMOGRAPHIC, SHOCK_IMPACT_LOG, HOUSEHOLD_POLICY_IMPACT) resolving the
-many-to-many relationships.
+12 tables: REGION, HOUSEHOLD, DEMOGRAPHIC_PROFILE, ENERGY_BILL, ENERGY_SUPPLIER,
+PAYMENT_METHOD, MACROECONOMIC_METRIC, COMMODITY_SHOCK, CENTRAL_BANK_POLICY, and
+3 bridge tables (HOUSEHOLD_DEMOGRAPHIC, SHOCK_IMPACT_LOG, HOUSEHOLD_POLICY_IMPACT)
+resolving the many-to-many relationships.
 
 ## Setup instructions
 
@@ -64,6 +64,23 @@ or via a GUI tool (MySQL Workbench, DBeaver, etc.).
 - All foreign keys use default constraint behavior (RESTRICT) unless stated otherwise.
 - The advanced queries compare regional energy spending, identify above average bills, and track household borrowing cost changes.
 
+## Normalization fix: PAYMENT_METHOD (3NF)
+
+The real electricity price data is differentiated by payment type, so the
+payment method is stored in its own lookup table instead of as text on each bill.
+
+- `PAYMENT_METHOD(payment_method_id PK, payment_method_name UNIQUE NOT NULL)`
+  holds each payment method once.
+- `ENERGY_BILL.payment_method_id` is a foreign key to `PAYMENT_METHOD`. The name
+  is no longer repeated on every bill, so it is stored in one place and cannot
+  drift between rows (e.g. inconsistent spellings).
+- `payment_method_id` is part of the unique key
+  `(household_id, supplier_id, payment_method_id, billing_period_start)`, so a
+  household can have one bill per payment method for the same supplier and
+  period. The real data needs this, as it gives a separate price for each payment
+  type.
+- The column is nullable for bills where the payment method is unknown.
+
 ## Documentation of Real Datasets
 UK Consumer Price Inflation
 - Source: Office for National Statistics (ONS), Consumer price inflation time series
@@ -74,7 +91,7 @@ UK Consumer Price Inflation
 
 UK Domestic Electricity Prices
 - Source: Department for Energy Security and Net Zero (DESNZ), Annual domestic energy bills, QEP Table 2.2.3 — Average annual domestic electricity bills for UK regions.
-- Publication date: The statistical dataset was originally published 28 March 2013. The version containing the 2025 data was updated on 18 December 2025; QEP Table 2.2.3 was  updated again on 30 June 2026.
+- Publication date: The statistical dataset was originally published 28 March 2013. The version containing the 2025 data was updated on 18 December 2025; QEP Table 2.2.3 was updated again on 30 June 2026.
 - Licence: Open Government Licence (OGL) v3.0. DESNZ publications are published under the OGL v3.0.
 - Access: Publicly available.
 - Selected data: Annual UK domestic electricity prices and bills from 2000–2025, differentiated by payment type.
@@ -84,14 +101,14 @@ UK Domestic Electricity Prices
 Re-ran the 3 queries from week 3 against the schema with real data integrated:
 
 - Query 1 (regional Q1 2022 spending): the real "United Kingdom" row never appears.
-  Real bills are annual (Jan-Dec), but the query requires billing_period_end <=
-  2022-03-31 (quarterly), so no real bill ever matches. Not adapted for this
-  deliverable since it's expected: the real data is a single national average,
-  not a 3+ household sample like the query assumes.
+Real bills are annual (Jan-Dec), but the query requires billing_period_end <=
+2022-03-31 (quarterly), so no real bill ever matches. Not adapted for this
+deliverable since it's expected: the real data is a single national average,
+not a 3+ household sample like the query assumes.
 - Query 2 (bills above same-period average): still meaningful with real data -
-  compares the 3 payment methods of the UK household within the same year and
-  surfaces which one cost above that year's average.
+compares the 3 payment methods of the UK household within the same year and
+surfaces which one cost above that year's average.
 - Query 3 (borrowing cost change via policy impact): unaffected by the real
-  data integration. Neither real dataset covers interest rates or mortgage
-  costs, so the UK household has 0 rows in HOUSEHOLD_POLICY_IMPACT and the
-  query still only reflects mock data.
+data integration. Neither real dataset covers interest rates or mortgage
+costs, so the UK household has 0 rows in HOUSEHOLD_POLICY_IMPACT and the
+query still only reflects mock data.

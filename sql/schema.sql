@@ -1,3 +1,5 @@
+-- Schema for energy_inflation (MySQL 8.0+). 12 tables.
+-- Run before seed_data.sql: mysql -u root -p energy_inflation < sql/schema.sql
 
 CREATE TABLE REGION (
     region_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -21,6 +23,8 @@ CREATE TABLE ENERGY_SUPPLIER (
     support_scheme_enrolled BOOLEAN NOT NULL
 );
 
+-- Lookup table for payment methods (3NF fix, see README).
+-- ENERGY_BILL references it by id instead of repeating the name.
 CREATE TABLE PAYMENT_METHOD (
     payment_method_id INT AUTO_INCREMENT PRIMARY KEY,
     payment_method_name VARCHAR(30) UNIQUE NOT NULL
@@ -41,7 +45,6 @@ CREATE TABLE CENTRAL_BANK_POLICY (
     base_interest_rate DECIMAL(8,4) NOT NULL,
     mortgage_stress_index DECIMAL(8,4)
 );
-
 
 CREATE TABLE HOUSEHOLD (
     household_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -64,16 +67,15 @@ CREATE TABLE MACROECONOMIC_METRIC (
     FOREIGN KEY (region_id) REFERENCES REGION(region_id)
 );
 
-
 CREATE TABLE ENERGY_BILL (
     bill_id INT AUTO_INCREMENT PRIMARY KEY,
     household_id INT NOT NULL,
     supplier_id INT NOT NULL,
-    payment_method_id INT,  
+    payment_method_id INT,
     billing_period_start DATE NOT NULL,
     billing_period_end DATE NOT NULL,
     kwh_consumed DECIMAL(10,2) NOT NULL,
-    price_cap_rate DECIMAL(10,6),  
+    price_cap_rate DECIMAL(10,6),
     total_amount_gbp DECIMAL(10,2) NOT NULL,
     UNIQUE (household_id, supplier_id, payment_method_id, billing_period_start),
     FOREIGN KEY (household_id) REFERENCES HOUSEHOLD(household_id),
@@ -81,6 +83,7 @@ CREATE TABLE ENERGY_BILL (
     FOREIGN KEY (payment_method_id) REFERENCES PAYMENT_METHOD(payment_method_id)
 );
 
+-- Bridge tables (many-to-many relationships)
 
 CREATE TABLE HOUSEHOLD_DEMOGRAPHIC (
     household_id INT NOT NULL,
