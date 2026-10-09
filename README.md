@@ -6,16 +6,23 @@ central-bank policy affect UK households across regions and demographic groups.
 
 ## Team members
 
-- Alex Todorov Kostadinov
-- Leo Fernández Cali
-- Angel Lucas Martinez
-- Alexander Šajánek
+- todorovalex
+- altay-frzc
+- angeellucaas
+- mystermy
 
 ## Repo structure
 
 - `sql/schema.sql` — Table definitions (DDL): 12 tables, PK/FK constraints
 - `sql/seed_data.sql` — Mock data (INSERT statements)
-- `sql/queries.sql` — Advanced SQL queries (JOINs, aggregations, subqueries)
+- `sql/seed_data_real.sql` — Real UK inflation and electricity data (INSERT statements)
+- `sql/UK_ONS_inflation_2000_2025.csv` — Monthly UK CPI and inflation data
+- `sql/UK_energy_prices_2000_2025.csv` — Annual UK electricity prices by payment method
+- `sql/queries.sql` — Queries on regional spending, bills, borrowing costs, vulnerability, shocks, price-per-kWh versus consumption changes, and average inflation by region
+- `sql/payment_and_inflation_queries.sql` — Queries on payment methods and annual bills alongside inflation
+- `sql/scheme_and_stress_queries.sql` — Queries on support schemes and mortgage stress
+- `sql/verify_normalization.sql` — Checks of the integrated data
+- `sql/prepare_release.sql` — Shortens mock postcodes before preparing a release
 - `scripts/crud.py` — Python script for basic CRUD operations against the DB
 
 ## Entity overview
@@ -39,9 +46,15 @@ cd energy-inflation
 mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS energy_inflation;"
 mysql -u root -p energy_inflation < sql/schema.sql
 
-4. Load mock data:
+4. Load mock data, then real data:
 
+```bash
 mysql -u root -p energy_inflation < sql/seed_data.sql
+mysql -u root -p energy_inflation < sql/seed_data_real.sql
+```
+
+Run each seed file once on a fresh database. The real-data SQL file already
+contains the transformed CSV data, so the CSV files do not need importing again.
 
 5. Install the Python dependency:
 
@@ -56,13 +69,23 @@ python scripts/crud.py
 
 Requires: `mysql-connector-python` (`pip install mysql-connector-python`)
 
-6. Advanced queries are in `sql/queries.sql` — run directly in your MySQL client
-or via a GUI tool (MySQL Workbench, DBeaver, etc.).
+6. Run the analytical query files:
+
+```bash
+mysql -u root -p energy_inflation < sql/queries.sql
+mysql -u root -p energy_inflation < sql/payment_and_inflation_queries.sql
+mysql -u root -p energy_inflation < sql/scheme_and_stress_queries.sql
+```
 
 ## Notes
 - Schema validated with MySQL syntax via DB Fiddle before merging.
 - All foreign keys use default constraint behavior (RESTRICT) unless stated otherwise.
 - The advanced queries compare regional energy spending, identify above average bills, and track household borrowing cost changes.
+- Both real datasets contain UK national averages. Regional inflation comparisons
+  therefore rely on mock data, not real regional inflation measurements.
+- For real electricity rows, `kwh_consumed` represents standard consumption used
+  to calculate annual bills, not measured household consumption. `price_cap_rate`
+  stores the electricity unit cost in GBP/kWh, not a historical Ofgem price cap.
 
 ## Normalization fix: PAYMENT_METHOD (3NF)
 
