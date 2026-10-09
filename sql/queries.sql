@@ -173,7 +173,7 @@ SELECT
     END AS price_rose_faster
 FROM growth
 ORDER BY recording_year, payment_method_name;
-
+-- mystermy
 -- highest average inflation by region
 -- all regions tied for highest.
 -- regional inflation records are just mock data.
