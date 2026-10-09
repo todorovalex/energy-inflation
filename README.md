@@ -135,3 +135,8 @@ surfaces which one cost above that year's average.
 data integration. Neither real dataset covers interest rates or mortgage
 costs, so the UK household has 0 rows in HOUSEHOLD_POLICY_IMPACT and the
 query still only reflects mock data.
+
+## Archived release and licence
+
+- Zenodo DOI: [10.5281/zenodo.23218208](https://doi.org/10.5281/zenodo.23218208)
+- Licence: CC BY 4.0. Original source data remains under the Open Government Licence (OGL) v3.0.
