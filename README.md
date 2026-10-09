@@ -142,4 +142,5 @@ query still only reflects mock data.
 - Licence: CC BY 4.0. Original source data remains under the Open Government Licence (OGL) v3.0.
 
 ## Stakeholder Video
-[![Stakeholder Video](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://youtu.be/vXeuZTqllQ0)
+[![Video Title](https://img.youtube.com/vi/v=_5tFXJQIzi4.jpg)](https://www.youtube.com/watch?v=https://youtu.be/vXeuZTqllQ0)
+
