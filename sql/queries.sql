@@ -108,3 +108,103 @@ JOIN MACROECONOMIC_METRIC m ON m.metric_id = s.metric_id
 WHERE s.impact_value IS NOT NULL
 GROUP BY c.commodity_type, s.impact_type
 ORDER BY avg_impact_value DESC, c.commodity_type, s.impact_type;
+
+-- GitHub user: mystermy
+-- higher price per kWh vs consumption increase?
+-- limitation: the consumption is the dataset's assumption,
+-- household usage is not measured.
+
+WITH annual_data AS (
+    SELECT
+        pm.payment_method_id,
+        pm.payment_method_name,
+        YEAR(b.billing_period_start) AS recording_year,
+        AVG(b.price_cap_rate) AS price_per_kwh,
+        AVG(b.kwh_consumed) AS consumption_kwh
+    FROM ENERGY_BILL b
+    JOIN HOUSEHOLD h ON h.household_id = b.household_id
+    JOIN ENERGY_SUPPLIER s ON s.supplier_id = b.supplier_id
+    JOIN PAYMENT_METHOD pm
+        ON pm.payment_method_id = b.payment_method_id
+    WHERE h.postcode = 'UK-AVG'
+      AND s.ofgem_license_code = 'NATIONAL-AVG'
+    GROUP BY
+        pm.payment_method_id,
+        pm.payment_method_name,
+        YEAR(b.billing_period_start)
+),
+previous_values AS (
+    SELECT
+        *,
+        LAG(recording_year) OVER (
+            PARTITION BY payment_method_id ORDER BY recording_year
+        ) AS previous_year,
+        LAG(price_per_kwh) OVER (
+            PARTITION BY payment_method_id ORDER BY recording_year
+        ) AS previous_price,
+        LAG(consumption_kwh) OVER (
+            PARTITION BY payment_method_id ORDER BY recording_year
+        ) AS previous_consumption
+    FROM annual_data
+),
+growth AS (
+    SELECT
+        *,
+        100.0 * (price_per_kwh - previous_price)
+            / NULLIF(previous_price, 0) AS price_change_pct,
+        100.0 * (consumption_kwh - previous_consumption)
+            / NULLIF(previous_consumption, 0) AS consumption_change_pct
+    FROM previous_values
+    WHERE recording_year = previous_year + 1
+)
+SELECT
+    recording_year,
+    payment_method_name,
+    ROUND(price_per_kwh, 4) AS price_per_kwh_gbp,
+    ROUND(consumption_kwh, 2) AS standard_consumption_kwh,
+    ROUND(price_change_pct, 2) AS price_change_pct,
+    ROUND(consumption_change_pct, 2) AS consumption_change_pct,
+    CASE
+        WHEN price_change_pct IS NULL
+          OR consumption_change_pct IS NULL THEN 'unk'
+        WHEN price_change_pct > 0
+         AND price_change_pct > consumption_change_pct THEN 'yes'
+        ELSE 'no'
+    END AS price_rose_faster
+FROM growth
+ORDER BY recording_year, payment_method_name;
+
+-- highest average inflation by region
+-- all regions tied for highest.
+-- regional inflation records are just mock data.
+
+WITH regional_averages AS (
+    SELECT
+        r.region_id,
+        r.region_name,
+        COUNT(*) AS observations,
+        MIN(m.recording_date) AS first_date,
+        MAX(m.recording_date) AS last_date,
+        AVG(m.inflation_rate) AS avg_inflation_rate
+    FROM REGION r
+    JOIN MACROECONOMIC_METRIC m ON m.region_id = r.region_id
+    WHERE r.region_name <> 'United Kingdom'
+    GROUP BY r.region_id, r.region_name
+),
+ranked_regions AS (
+    SELECT
+        *,
+        DENSE_RANK() OVER (
+            ORDER BY avg_inflation_rate DESC
+        ) AS inflation_rank
+    FROM regional_averages
+)
+SELECT
+    region_name,
+    ROUND(avg_inflation_rate, 3) AS avg_inflation_rate_pct,
+    observations,
+    first_date,
+    last_date
+FROM ranked_regions
+WHERE inflation_rank = 1
+ORDER BY region_name;
