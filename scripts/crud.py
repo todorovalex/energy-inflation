@@ -25,14 +25,14 @@ def create_household(region_id, postcode, dwelling_type, occupant_count, housing
     conn.close()
     return household_id
 
-def create_energy_bill(household_id, supplier_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp):
+def create_energy_bill(household_id, supplier_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp, payment_method_id=None):
     conn = get_connection()
     cursor = conn.cursor()
     query = """
-        INSERT INTO ENERGY_BILL (household_id, supplier_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO ENERGY_BILL (household_id, supplier_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp, payment_method_id)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """
-    cursor.execute(query, (household_id, supplier_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp))
+    cursor.execute(query, (household_id, supplier_id, billing_period_start, billing_period_end, kwh_consumed, price_cap_rate, total_amount_gbp, payment_method_id))
     conn.commit()
     bill_id = cursor.lastrowid
     print(f"[CREATE] Energy bill created with ID: {bill_id}")
