@@ -141,6 +141,7 @@ query still only reflects mock data.
 - Zenodo DOI: [10.5281/zenodo.23218208](https://doi.org/10.5281/zenodo.23218208)
 - Licence: CC BY 4.0. Original source data remains under the Open Government Licence (OGL) v3.0.
 
-## Stakeholder Video
-[![Video Title](https://img.youtube.com/vi/v=_5tFXJQIzi4.jpg)](https://www.youtube.com/watch?v=https://youtu.be/vXeuZTqllQ0)
+## Project Video Demonstration
+
+[![Watch the video](https://img.youtube.com/vi/vXeuZTqllQ0/maxresdefault.jpg)](https://youtu.be/vXeuZTqllQ0)
 
